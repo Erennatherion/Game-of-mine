@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Дөлгөөнийг хэр сайн мэдэх вэ?</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Courier New', monospace;
+      background-image: url('https://i.imgur.com/2UJvZ8F.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      color: white;
+      text-shadow: 1px 1px 2px black;
+    }
+    .container {
+      max-width: 700px;
+      margin: 60px auto;
+      background-color: rgba(0,0,0,0.7);
+      padding: 20px;
+      border-radius: 12px;
+    }
+    input[type="text"], button {
+      padding: 10px;
+      font-size: 1em;
+      width: 100%;
+      margin-top: 10px;
+      border: none;
+      border-radius: 8px;
+    }
+    button {
+      background-color: #5a67d8;
+      color: white;
+      cursor: pointer;
+    }
+    #results {
+      margin-top: 20px;
+      background-color: rgba(255,255,255,0.1);
+      padding: 10px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Дөлгөөнийг хэр сайн мэдэх вэ?</h1>
+    <p>Өөрийн нэрээ бичээд эхлүүлээрэй:</p>
+    <input type="text" id="username" placeholder="Таны нэр"/>
+    <button onclick="startGame()">Тоглоом эхлүүлэх</button>
+    <div id="game" style="display:none;">
+      <h2 id="question"></h2>
+      <input type="text" id="answer" placeholder="Таны хариулт"/>
+      <button onclick="submitAnswer()">Хариу илгээх</button>
+    </div>
+    <div id="results">
+      <h3>Бусад хүмүүсийн хариулсан хариулт:</h3>
+      <ul id="allAnswers"></ul>
+    </div>
+  </div>
+
+  <script>
+    const questions = [{'q': 'Дөлгөөнийг юу гэж бодож байна?', 'type': 'branch'}, {'q': 'Дөлгөөний барьдаг утас?', 'a': 'iPhone'}, {'q': 'Дөлгөөний өндөр хэд вэ?', 'a': '172'}, {'q': 'Дөлгөөний дуртай дуу?', 'a': 'Unravel'}, {'q': 'Дөлгөөний овог?', 'a': 'Бат-Эрдэнэ'}, {'q': 'Дөлгөөний дуртай тоглоом?', 'a': 'CSGO'}, {'q': 'Дөлгөөний Facebook хаяг?', 'a': 'dolgoon.fb'}, {'q': 'Дөлгөөний Instagram хаяг?', 'a': 'dolgoon.ig'}, {'q': 'Дөлгөөний цахим тоглоомд ашигладаг нэрсийн нэг?', 'a': 'DolgoonX'}, {'q': 'Дөлгөөн найз охинтой эсвэл эхнэртэй юу?', 'a': 'найз охинтой'}, {'q': 'Түүний нэр хэн бэ?', 'a': 'Ариун'}, {'q': 'Дөлгөөний тухай 1-р сонирхолтой асуулт?', 'a': 'Хариулт 1'}, {'q': 'Дөлгөөний тухай 2-р сонирхолтой асуулт?', 'a': 'Хариулт 2'}, {'q': 'Дөлгөөний тухай 3-р сонирхолтой асуулт?', 'a': 'Хариулт 3'}, {'q': 'Дөлгөөний тухай 4-р сонирхолтой асуулт?', 'a': 'Хариулт 4'}, {'q': 'Дөлгөөний тухай 5-р сонирхолтой асуулт?', 'a': 'Хариулт 5'}, {'q': 'Дөлгөөний тухай 6-р сонирхолтой асуулт?', 'a': 'Хариулт 6'}, {'q': 'Дөлгөөний тухай 7-р сонирхолтой асуулт?', 'a': 'Хариулт 7'}, {'q': 'Дөлгөөний тухай 8-р сонирхолтой асуулт?', 'a': 'Хариулт 8'}, {'q': 'Дөлгөөний тухай 9-р сонирхолтой асуулт?', 'a': 'Хариулт 9'}, {'q': 'Дөлгөөний тухай 10-р сонирхолтой асуулт?', 'a': 'Хариулт 10'}, {'q': 'Дөлгөөний тухай 11-р сонирхолтой асуулт?', 'a': 'Хариулт 11'}, {'q': 'Дөлгөөний тухай 12-р сонирхолтой асуулт?', 'a': 'Хариулт 12'}, {'q': 'Дөлгөөний тухай 13-р сонирхолтой асуулт?', 'a': 'Хариулт 13'}, {'q': 'Дөлгөөний тухай 14-р сонирхолтой асуулт?', 'a': 'Хариулт 14'}, {'q': 'Дөлгөөний тухай 15-р сонирхолтой асуулт?', 'a': 'Хариулт 15'}, {'q': 'Дөлгөөний тухай 16-р сонирхолтой асуулт?', 'a': 'Хариулт 16'}, {'q': 'Дөлгөөний тухай 17-р сонирхолтой асуулт?', 'a': 'Хариулт 17'}, {'q': 'Дөлгөөний тухай 18-р сонирхолтой асуулт?', 'a': 'Хариулт 18'}, {'q': 'Дөлгөөний тухай 19-р сонирхолтой асуулт?', 'a': 'Хариулт 19'}, {'q': 'Дөлгөөний тухай 20-р сонирхолтой асуулт?', 'a': 'Хариулт 20'}, {'q': 'Дөлгөөний тухай 21-р сонирхолтой асуулт?', 'a': 'Хариулт 21'}, {'q': 'Дөлгөөний тухай 22-р сонирхолтой асуулт?', 'a': 'Хариулт 22'}, {'q': 'Дөлгөөний тухай 23-р сонирхолтой асуулт?', 'a': 'Хариулт 23'}, {'q': 'Дөлгөөний тухай 24-р сонирхолтой асуулт?', 'a': 'Хариулт 24'}, {'q': 'Дөлгөөний тухай 25-р сонирхолтой асуулт?', 'a': 'Хариулт 25'}, {'q': 'Дөлгөөний тухай 26-р сонирхолтой асуулт?', 'a': 'Хариулт 26'}, {'q': 'Дөлгөөний тухай 27-р сонирхолтой асуулт?', 'a': 'Хариулт 27'}, {'q': 'Дөлгөөний тухай 28-р сонирхолтой асуулт?', 'a': 'Хариулт 28'}, {'q': 'Дөлгөөний тухай 29-р сонирхолтой асуулт?', 'a': 'Хариулт 29'}, {'q': 'Дөлгөөний тухай 30-р сонирхолтой асуулт?', 'a': 'Хариулт 30'}];
+    let current = 0;
+    let user = "";
+    let answers = [];
+
+    function startGame() {
+      user = document.getElementById('username').value.trim();
+      if (!user) return alert("Нэрээ оруулна уу!");
+      document.getElementById('game').style.display = 'block';
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const q = questions[current];
+      document.getElementById('question').innerText = q.q;
+      document.getElementById('answer').value = "";
+    }
+
+    function submitAnswer() {
+      const userAnswer = document.getElementById('answer').value.trim();
+      if (!userAnswer) return alert("Хариултаа оруулна уу!");
+      const qText = questions[current].q;
+      answers.push({user, q: qText, a: userAnswer});
+      localStorage.setItem("dolgoon_answers", JSON.stringify(answers));
+      current++;
+      if (current >= questions.length) {
+        alert("Тоглоом дууслаа! Хариултууд хадгалагдлаа.");
+        displayAllAnswers();
+        return;
+      }
+      showQuestion();
+    }
+
+    function displayAllAnswers() {
+      const stored = JSON.parse(localStorage.getItem("dolgoon_answers") || "[]");
+      const list = document.getElementById("allAnswers");
+      list.innerHTML = "";
+      stored.forEach(entry => {
+        const li = document.createElement("li");
+        li.textContent = `${entry.user}: ${entry.q} → ${entry.a}`;
+        list.appendChild(li);
+      });
+    }
+
+    window.onload = displayAllAnswers;
+  </script>
+</body>
+</html>
